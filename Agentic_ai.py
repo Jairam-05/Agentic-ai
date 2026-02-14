@@ -4,11 +4,11 @@ import numpy as np
 from scipy.signal import welch
 import pygame
 
-# ------------------ Load model ------------------
+# Load model 
 model = joblib.load("model.pkl")
 scaler = joblib.load("scaler.pkl")
 
-# ------------------ Feature Extraction ------------------
+#  Extracting the Features 
 bands = {"delta": (0.5, 4), "theta": (4, 8), "alpha": (8, 13), "beta": (13, 30)}
 sf = 128
 
@@ -33,7 +33,7 @@ def extract_features(df, window_size=128*5):
         features_list.append(features)
     return np.array(features_list)
 
-# ------------------ Actions ------------------
+
 pygame.mixer.init()
 
 def play_relaxing_music():
@@ -46,7 +46,7 @@ def play_relaxing_music():
     pygame.mixer.music.load(os.path.join("relax_sounds", chosen))
     pygame.mixer.music.play()
 
-# ------------------ Agentic Analyzer ------------------
+
 def analyze_eeg(file_path):
     df = pd.read_csv(file_path)
     if "Unnamed: 0" in df.columns:
@@ -88,5 +88,5 @@ def agentic_loop(folder="Live_EEG", interval=60):
         print(f"🔁 Rechecking in {interval}s...\n")
         time.sleep(interval)
 
-# Uncomment below to start live loop
-# agentic_loop("Live_EEG", interval=60)
+
+
