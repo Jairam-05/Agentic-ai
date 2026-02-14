@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import os
 
-# ------------------ PAGE CONFIG ------------------
+#  PAGE CONFIG 
 st.set_page_config(page_title="🧠 Multimodal Agentic Stress Analyzer", layout="wide")
 st.markdown("""
     <style>
@@ -19,13 +19,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ------------------ LOAD MODELS ------------------
+# LOAD MODELS 
 model_eeg = joblib.load("model.pkl")
 scaler_eeg = joblib.load("scaler.pkl")
 model_audio = joblib.load("model_audio.pkl")
 scaler_audio = joblib.load("scaler_audio.pkl")
 
-# ------------------ DSP UTILS (EEG) ------------------
+# EEG Features
 bands = {"Delta": (0.5, 4), "Theta": (4, 8), "Alpha": (8, 13), "Beta": (13, 30)}
 sf = 128
 
@@ -50,7 +50,7 @@ def extract_eeg_features(df, window_size=128*5):
         features_list.append(features)
     return np.array(features_list)
 
-# ------------------ AUDIO FEATURE UTILS ------------------
+# AUDIO FEATURE UTILS
 def extract_audio_features(file_path):
     y, sr = librosa.load(file_path, sr=None)
     y, _ = librosa.effects.trim(y)
@@ -60,7 +60,6 @@ def extract_audio_features(file_path):
     rms = np.mean(librosa.feature.rms(y=y))
     return np.hstack([mfccs, chroma, [zcr, rms]])
 
-# ------------------ AGENTIC RECOMMENDER ------------------
 def recommend_activities(stress_level):
     """Return recommended activities based on stress level."""
     if stress_level <= 40:
@@ -94,13 +93,13 @@ def recommend_activities(stress_level):
             ]
         }
 
-# ------------------ HEADER ------------------
+
 st.markdown("<p class='title'>🧠 Agentic Multimodal Stress Analyzer</p>", unsafe_allow_html=True)
 st.caption("EEG + Acoustic Signal Stress Detection | Developed by Jairam | DSP + AI + Streamlit")
 
 tab1, tab2 = st.tabs(["📊 EEG Analysis", "🎙️ Acoustic Analysis"])
 
-# ------------------ SESSION STATE ------------------
+
 if "eeg_score" not in st.session_state:
     st.session_state.eeg_score = None
 if "audio_score" not in st.session_state:
@@ -108,7 +107,7 @@ if "audio_score" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# ------------------ TAB 1: EEG ------------------
+
 with tab1:
     uploaded_eeg = st.file_uploader("📂 Upload EEG CSV file", type=["csv"])
     if uploaded_eeg:
@@ -138,7 +137,6 @@ with tab1:
             st.metric("Prediction", label)
             st.success(f"🧠 EEG stress score saved: {eeg_score:.2f}%")
 
-# ------------------ TAB 2: ACOUSTIC ------------------
 with tab2:
     uploaded_audio = st.file_uploader("🎧 Upload Audio File (WAV)", type=["wav"])
     if uploaded_audio:
@@ -172,7 +170,6 @@ with tab2:
             st.metric("Prediction", label)
             st.success(f"🎧 Acoustic stress score saved: {prob:.2f}%")
 
-# ------------------ COMBINED MULTIMODAL ANALYSIS ------------------
 st.markdown("---")
 st.subheader("🧩 Multimodal Agentic Decision Fusion")
 
@@ -198,7 +195,6 @@ if st.button("🧠 Run Combined EEG + Audio Analysis"):
         st.metric("Acoustic Stress", f"{audio_score:.2f}%")
         st.metric("Final Stress Score", f"{final_score:.2f}%")
 
-        # -------- Agentic Recommendations --------
         st.markdown("### 🤖 Agentic AI Recommendations")
         agent = recommend_activities(final_score)
         st.markdown(f"**{agent['status']}**")
@@ -210,7 +206,7 @@ if st.button("🧠 Run Combined EEG + Audio Analysis"):
             if os.path.exists("relax_sounds/relax1.mp3"):
                 st.audio("relax_sounds/relax1.mp3", format="audio/mp3")
 
-        # -------- Log & Visualization --------
+        #Log & Visualization 
         st.session_state.history.append({
             "timestamp": datetime.now().strftime("%H:%M:%S"),
             "EEG": eeg_score,
@@ -225,3 +221,4 @@ if st.button("🧠 Run Combined EEG + Audio Analysis"):
 
 st.markdown("---")
 st.caption("Developed by Jairam | Powered by DSP + AI + Streamlit 🧠")
+
